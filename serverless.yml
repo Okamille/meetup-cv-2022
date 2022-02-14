@@ -1,0 +1,26 @@
+service: ml-lambda-mnist
+frameworkVersion: '3'
+
+provider:
+  httpApi:
+    cors: true
+  name: aws
+  ecr:
+    images:
+      model-deploy:
+        path: .
+
+package:
+  exclude:
+    - node_modules/**
+    - frontend/**
+
+functions:
+  ml-backend:
+    memorySize: 1024
+    timeout: 20
+    image: model-deploy
+    events:
+      - httpApi:
+          path: /api/model/predict
+          method: post

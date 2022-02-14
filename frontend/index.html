@@ -1,0 +1,43 @@
+<head>
+    <script src="fabric.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <title>MNIST Digit Recognition with serverless</title>
+</head>
+
+<div id="root">
+    <h1>
+        MNIST Digit Recognition with serverless
+    </h1>
+    <canvas id="canvas" width="400" height="400"></canvas>
+    <button id="clear" onclick="clearCanvas(canvas)">Clear</button>
+    <button id="submit" onclick="submitCanvas(canvas)">Predict</button>
+    <div id="predicted_digit">No digit has been sent</div>
+    <script>
+        let canvas = new fabric.Canvas('canvas');
+
+        canvas.backgroundColor = '#ffffff';
+        canvas.renderAll();
+        canvas.isDrawingMode = true;
+        canvas.freeDrawingBrush.width = 40;
+
+        function submitCanvas(canvas) {
+            document.getElementById('predicted_digit').innerText = "Loading digit ...";
+            let dataURL = canvas.toDataURL();
+            fetch('https://hd8htqmk8f.execute-api.us-east-1.amazonaws.com/default/meetup-cv-docker', {
+                method: 'POST',
+                body: dataURL
+            }).then(response => response.json()).then(data => {
+                document.getElementById('predicted_digit').innerText = `Predicted digit: ${data.result}`;
+            });
+        }
+
+        function clearCanvas(canvas) {
+            canvas.clear();
+            canvas.backgroundColor = '#ffffff';
+            canvas.renderAll();
+        }
+    </script>
+</div>
